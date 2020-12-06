@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Electricity Consumption Graph App</string>
+    <string name="chart_name">XYZ Room</string>
+</resources>
