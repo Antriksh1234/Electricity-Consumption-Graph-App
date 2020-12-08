@@ -2,10 +2,10 @@ package com.atandroidlabs.electricityconsumptiongraphapp;
 
 public class Consumption {
 
-    int noOfSwitches, electricalUnits;
+    int switchNumber, electricalUnits;
 
-    Consumption(int noOfSwitches, int electricalUnits) {
-        this.noOfSwitches = noOfSwitches;
+    Consumption(int switchNumber, int electricalUnits) {
+        this.switchNumber = switchNumber;
         this.electricalUnits = electricalUnits;
     }
 }

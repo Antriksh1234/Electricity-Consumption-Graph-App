@@ -5,4 +5,5 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="lineColor">#FA8799</color>
     <color name="pointColor">#F63956</color>
+    <color name="gridLineColor">#54755E</color>
 </resources>

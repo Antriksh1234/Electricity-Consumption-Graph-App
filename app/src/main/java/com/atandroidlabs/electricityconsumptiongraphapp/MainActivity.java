@@ -5,7 +5,6 @@ import androidx.core.content.ContextCompat;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -13,8 +12,7 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.util.ArrayList;
 
@@ -54,56 +52,63 @@ public class MainActivity extends AppCompatActivity {
     private void setLineDataSet() {
         int lineColor = ContextCompat.getColor(this, R.color.lineColor);
         int pointColor = ContextCompat.getColor(this, R.color.pointColor);
+
         lineDataSet.setCircleColor(pointColor);
         lineDataSet.setCircleRadius(7f);
         lineDataSet.setLineWidth(6f);
         lineDataSet.setColor(lineColor);
         lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        //lineDataSet.setDrawCircles(true);
+        lineDataSet.setDrawHorizontalHighlightIndicator(false);
+        lineDataSet.setDrawVerticalHighlightIndicator(false);
     }
 
-    private void setLineChart(LineChart chart) {
+    private void setLineChart(final LineChart chart) {
+
         //setting a NO background for the graph
         chart.setDrawGridBackground(false);
 
+        final ElectricalMarkerView marker = new ElectricalMarkerView(this, R.layout.electrical_graph_markerview);
+        marker.setChartView(chart);
+        //set the marker for the lineChart
+        chart.setMarker(marker);
+
+        chart.setDrawBorders(false);
+        //Removing the legend(small square at the bottom left) of the consumption graph
+        chart.getLegend().setEnabled(false);
+
+        ////////////////////X Axis //////////////////////////////////////////////
+        chart.getXAxis().setDrawGridLines(false);
+        chart.getXAxis().setAxisMinimum(0f);
+        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart.getXAxis().setAxisLineWidth(1f);
+        //Setting textColor of labels of X axis and their rotation by -45 degrees
+        chart.getXAxis().setTextColor(Color.WHITE);
+        chart.getXAxis().setLabelCount(consumptions.size());
+        chart.getXAxis().setLabelRotationAngle(-45);
+
+        //Formatting the text of the X Axis for specifying the switch number
+        formatXAxisIndexLabels(chart.getXAxis());
+        //////////////////X Axis ///////////////////////////////////
+
+        //////////////////////Y Axis /////////////////////////
         //Setting position only as per first quadrant
         chart.getAxisLeft().setDrawGridLines(true);
+
+        int grayGridLineColor = ContextCompat.getColor(this,R.color.gridLineColor);
+        chart.getAxisLeft().setGridColor(grayGridLineColor);
         chart.getAxisLeft().setGridLineWidth(1f);
+        chart.getAxisLeft().setAxisMinimum(0f);
+        chart.getAxisLeft().setDrawAxisLine(false);
 
         chart.getAxisRight().setDrawGridLines(false);
-
-        chart.getXAxis().setDrawGridLines(false);
-        chart.getAxisRight().setDrawLabels(false);
         chart.getAxisRight().setEnabled(false);
-        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        chart.setDrawBorders(false);
-        chart.getAxisLeft().setAxisMinimum(0f);
-        chart.getXAxis().setAxisMinimum(0f);
 
-        chart.getXAxis().setAxisLineWidth(3f);
-        chart.getAxisLeft().setAxisLineWidth(3f);
-
-        //Setting textColor of labels
-        chart.getXAxis().setTextColor(Color.WHITE);
+        //Setting textColor of labels, their count and their size for Y Axis
         chart.getAxisLeft().setTextColor(Color.WHITE);
         chart.getAxisLeft().setTextSize(10f);
-
-        chart.getXAxis().setLabelCount(consumptions.size());
-        chart.getAxisLeft().setLabelCount(consumptions.size());
-
-        chart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
-            @Override
-            public void onValueSelected(Entry e, Highlight h) {
-                float x = e.getX();
-                float y = e.getY();
-
-                Toast.makeText(MainActivity.this, "Switch- " + x + ", Electrical unit- " + y, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onNothingSelected() {
-                //Nothing done
-            }
-        });
+        chart.getAxisLeft().setLabelCount(consumptions.size()); //is dynamic, depends on size of arrayList
+        /////////////////////Y Axis /////////////////////////
     }
 
     private void setChartDescription(LineChart chart) {
@@ -115,25 +120,39 @@ public class MainActivity extends AppCompatActivity {
 //        chart.getDescription().setTextSize(10f);
     }
 
+    private void formatXAxisIndexLabels(final XAxis xAxis) {
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                if (value == xAxis.getAxisMinimum()) {
+                    return "";
+                }
+                return "Switch " + (int)value;
+            }
+        });
+    }
+
     private ArrayList<Entry> getLineEntries(ArrayList<Consumption> consumptions) {
         lineEntries = new ArrayList<>();
         for (Consumption consumption : consumptions) {
-            lineEntries.add(new Entry(consumption.noOfSwitches, consumption.electricalUnits));
+            lineEntries.add(new Entry(consumption.switchNumber, consumption.electricalUnits));
         }
         return lineEntries;
     }
 
     private void getConsumptionData() {
-        Consumption c1 = new Consumption(10, 20);
-        Consumption c2 = new Consumption(20, 45);
-        Consumption c3 = new Consumption(30, 50);
-        Consumption c4 = new Consumption(40, 60);
-        Consumption c5 = new Consumption(50, 65);
+        Consumption c1 = new Consumption(1, 10);
+        Consumption c2 = new Consumption(2, 15);
+        Consumption c3 = new Consumption(3, 25);
+        Consumption c4 = new Consumption(4, 17);
+        Consumption c5 = new Consumption(5, 30);
+        Consumption c6 = new Consumption(6, 40);
 
         consumptions.add(c1);
         consumptions.add(c2);
         consumptions.add(c3);
         consumptions.add(c4);
         consumptions.add(c5);
+        consumptions.add(c6);
     }
 }
