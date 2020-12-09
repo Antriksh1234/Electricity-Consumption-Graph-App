@@ -9,6 +9,7 @@ import android.os.Bundle;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         lineDataSet.setColor(lineColor);
         lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         //lineDataSet.setDrawCircles(true);
+        lineDataSet.setDrawCircleHole(false);
         lineDataSet.setDrawHorizontalHighlightIndicator(false);
         lineDataSet.setDrawVerticalHighlightIndicator(false);
     }
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         chart.getXAxis().setDrawGridLines(false);
         chart.getXAxis().setAxisMinimum(0f);
         chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        chart.getXAxis().setAxisLineWidth(1f);
+        chart.getXAxis().setAxisLineWidth(0.7f);
         //Setting textColor of labels of X axis and their rotation by -45 degrees
         chart.getXAxis().setTextColor(Color.WHITE);
         chart.getXAxis().setLabelCount(consumptions.size());
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         int grayGridLineColor = ContextCompat.getColor(this,R.color.gridLineColor);
         chart.getAxisLeft().setGridColor(grayGridLineColor);
-        chart.getAxisLeft().setGridLineWidth(1f);
+        chart.getAxisLeft().setGridLineWidth(0.7f);
         chart.getAxisLeft().setAxisMinimum(0f);
         chart.getAxisLeft().setDrawAxisLine(false);
 
@@ -108,6 +110,9 @@ public class MainActivity extends AppCompatActivity {
         chart.getAxisLeft().setTextColor(Color.WHITE);
         chart.getAxisLeft().setTextSize(10f);
         chart.getAxisLeft().setLabelCount(consumptions.size()); //is dynamic, depends on size of arrayList
+
+        //Add a space in YAxis labels to make the labels more further away from the Y Axis
+        formatYAxisIndexLabels(chart.getAxisLeft());
         /////////////////////Y Axis /////////////////////////
     }
 
@@ -128,6 +133,15 @@ public class MainActivity extends AppCompatActivity {
                     return "";
                 }
                 return "Switch " + (int)value;
+            }
+        });
+    }
+
+    private void formatYAxisIndexLabels(final YAxis yAxis) {
+        yAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return (int)value + "  ";
             }
         });
     }
